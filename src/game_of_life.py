@@ -1,153 +1,268 @@
-import random
-import sys
 import pygame
+import sys
+import os
+from game_window_class import *
+from button_class import *
+
+# Varibles for Game
+width,height = 800,800
+background = (199,199,199)
+FPS = 60
+
+# Game Methods/Actions
+def get_events():
+    global running
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False 
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_pos = pygame.mouse.get_pos()
+            if mouse_on_grid(mouse_pos):
+                click_cell(mouse_pos)
+            else:
+                for button in buttons:
+                    button.click()
+
+def update():
+    game_window.update()
+    for button in buttons:
+        button.update(mouse_pos, game_state = state)
+
+def draw():
+     window.fill(background)
+     for button in buttons:
+        button.draw()
+
+     game_window.draw()
+
+def mouse_on_grid(pos):
+    if pos[0] > 100 and pos[0] < width - 100:
+         if pos[1] > 100 and pos[1] < height - 20:
+                return True
+    return False   
+
+def click_cell(pos):
+    grid_pos= [pos[0]-100, pos[1] - 180]
+    grid_pos[0]=grid_pos[0]//20
+    grid_pos[1]=grid_pos[1]//20
+    if  game_window.grid[grid_pos[1]][grid_pos[0]].alive:
+         game_window.grid[grid_pos[1]][grid_pos[0]].alive = False
+    else:
+        game_window.grid[grid_pos[1]][grid_pos[0]].alive =True
+
+# Running
+def running_get_events():
+    global running
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False 
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_pos = pygame.mouse.get_pos()
+            if mouse_on_grid(mouse_pos):
+                click_cell(mouse_pos)
+            else:
+                for button in buttons:
+                    button.click()
+               
+def running_update():
+    game_window.update()
+    for button in buttons:
+        button.update(mouse_pos, game_state = state)
+
+def running_draw():
+     window.fill(background)
+     for button in buttons:
+        button.draw()
+
+     game_window.draw()
+
+# Pause
+def pause_get_events(self):
+    global running
+    for event in pygame.event.get():
+        if self.paused:
+            self.paused = False
+        else:
+            self.paused = True        
+        if event.type == pygame.QUIT:
+            running = False 
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_pos = pygame.mouse.get_pos()
+            if mouse_on_grid(mouse_pos):
+                click_cell(mouse_pos)
+            else:
+                for button in buttons:
+                    button.click()
+
+def pause_update():
+    game_window.update()
+    for button in buttons:
+        button.update(mouse_pos, game_state = state)
+
+def pause_draw():
+     window.fill(background)
+     for button in buttons:
+        button.draw()
+
+     game_window.draw()
+
+#Rewind
+def rewind_get_events():
+    global running
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False 
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_pos = pygame.mouse.get_pos()
+            if mouse_on_grid(mouse_pos):
+                click_cell(mouse_pos)
+            else:
+                for button in buttons:
+                    button.click()
+                    print(button.click(mouse_pos))
+def rewind_update():
+    game_window.update()
+    for button in buttons:
+        button.update(mouse_pos, game_state = state)
+
+def rewind_draw():
+     window.fill(background)
+     for button in buttons:
+        button.draw()
+
+     game_window.draw()     
+
+#Foward
+def foward_get_events():
+    global running
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False 
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_pos = pygame.mouse.get_pos()
+            if mouse_on_grid(mouse_pos):
+                click_cell(mouse_pos)
+            else:
+                for button in buttons:
+                    button.click()
+
+def foward_update():
+    game_window.update()
+    for button in buttons:
+        button.update(mouse_pos, game_state = state)
+
+def foward_draw():
+     window.fill(background)
+     for button in buttons:
+        button.draw()
+
+     game_window.draw()
 
 
-class Game_Of_Life:
+#Clear
+def clear_get_events():
+    global running
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False 
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_pos = pygame.mouse.get_pos()
+            if mouse_on_grid(mouse_pos):
+                click_cell(mouse_pos)
+            else:
+                for button in buttons:
+                    button.click()
 
-    def __init__(self, screen_width=800, screen_height=600, cell_size=10, alive_color=(0, 255, 255),
-                 dead=(0, 0, 0), max_fps=10):
-        pygame.init()
-        self.screen_width = screen_width
-        self.screen_height = screen_height
-        self.cell_size = cell_size
-        self.alive_color = alive_color
-        self.dead = dead
+def clear_update():
+    game_window.update()
+    for button in buttons:
+        button.update(mouse_pos, game_state = state)
 
-        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
-        self.clear_screen()
-        pygame.display.flip()
+def clear_draw():
+     window.fill(background)
+     for button in buttons:
+        button.draw()
 
-        self.max_fps = max_fps
+     game_window.draw()
 
-        self.alive = 0
-        self.num_cols = int(self.screen_width / self.cell_size)
-        self.num_rows = int(self.screen_height / self.cell_size)
-        self.grids = []
-        self.init_grids()
-        self.update()
+def counter():
+    pass
 
-        self.paused = False
-        self.game_over = False
+def make_button():
+    buttons = []
+    
+    #Start Button
+    buttons.append(Button(window, width//5 - 100,80, 150, 30, text ='Let us live!',color=(50, 137, 168),hover_color=(174, 217, 232), bold_text=True,function=run_game, state="setting"))
+    #Pause
+    buttons.append(Button(window, width//2-150,80, 115, 30, text ='Pause life!',color=(50, 137, 168),hover_color=(174, 217, 232), bold_text=True,function=pause_game,state="running"))
+    #Rewind
+    buttons.append(Button(window, width//5 +250,80, 170, 30, text ='Go back in time!',color=(50, 137, 168),hover_color=(174, 217, 232), bold_text=True,function=rewind_game,state="running"))
+    #Fast Foward
+    buttons.append(Button(window, width//2+220,80, 100, 30, text ='Skip life!',color=(50, 137, 168),hover_color=(174, 217, 232), bold_text=True,function=fast_foward_game, state="running"))
+    #Reset Grid
+    buttons.append(Button(window, width//2+220,80, 100, 30, text ='Skip life!',color=(50, 137, 168),hover_color=(174, 217, 232), bold_text=True,function=reset_game, state="running"))
+    
 
-    def init_grids(self):
-        def create_grid():
-            rows = []
-            for row_num in range(self.num_rows):
-                list_of_columns = [0] * self.num_cols
-                rows.append(list_of_columns)
-            return rows
-        self.grids.append(create_grid())
-        self.grids.append(create_grid())
-
-    def update(self, value=None, grid=0):
-        for f in range(self.num_rows):
-            for l in range(self.num_cols):
-                if value is None:
-                    cell_value = random.randint(0, 1)
-                else:
-                    cell_value = value
-                self.grids[grid][f][l] = cell_value
-
-    def draw(self):
-        self.clear_screen()
-        for i in range(self.num_cols):
-            for f in range(self.num_rows):
-                if self.grids[self.alive][f][i] == 1:
-                    color = self.alive_color
-                else:
-                    color = self.dead
-                pygame.draw.circle(self.screen,
-                                   color,
-                                   (int(i * self.cell_size + (self.cell_size / 2)),
-                                    int(f * self.cell_size + (self.cell_size / 2))),
-                                   int(self.cell_size / 2),
-                                   0)
-        pygame.display.flip()
-
-    def clear_screen(self):
-
-        self.screen.fill(self.dead)
-
-    def get_cell(self, row_num, col_num):
-
-        try:
-            cell_value = self.grids[self.alive][row_num][col_num]
-        except:
-            cell_value = 0
-        return cell_value
-
-    def get_neighbors(self, row, cols):
-   
-        neighbor_count = 0
-        neighbor_count += self.get_cell(row - 1, cols - 1)
-        neighbor_count += self.get_cell(row - 1, cols)
-        neighbor_count += self.get_cell(row - 1, cols + 1)
-        neighbor_count += self.get_cell(row, cols - 1)
-        neighbor_count += self.get_cell(row, cols + 1)
-        neighbor_count += self.get_cell(row + 1, cols - 1)
-        neighbor_count += self.get_cell(row + 1, cols)
-        neighbor_count += self.get_cell(row + 1, cols + 1)
-
-      
-        if self.grids[self.alive][row][cols] == 1:  # alive
-            if neighbor_count > 3:  # Overpopulation
-                return 0
-            if neighbor_count < 2:  # Underpopulation
-                return 0
-            if neighbor_count == 2 or neighbor_count == 3:
-                return 1
-        elif self.grids[self.alive][row][cols] == 0:  # dead
-            if neighbor_count == 3:
-                return 1  # come to life
-
-        return self.grids[self.alive][row][cols]
-
-    def update_generation(self):
+    return buttons
  
-        self.update(0, self.not_alive())
-        for r in range(self.num_rows - 1):
-            for c in range(self.num_cols - 1):
-                next_gen_state = self.get_neighbors(r, c)
-                self.grids[self.not_alive()][r][c] = next_gen_state
-        self.alive = self.not_alive()
+    #Button Funtionality 
+def run_game():
+    global state
+    state = 'running'
 
-    def not_alive(self):
+def pause_game():
+    global state
+    state = 'pause'
 
-        return (self.alive + 1) % 2
+def rewind_game():
+    global state
+    state = 'rewind'
 
-    def get_event(self):
-         for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.unicode == 's':
-                    if self.paused:
-                        self.paused = False
-                    else:
-                        self.paused = True
-                elif event.unicode == 'r':
-                
-                    self.alive = 0
-                    self.update(None, self.alive)  # randomize
-                    self.update(0, self.not_alive())  # set to 0
-                    self.draw()
-                elif event.unicode == 'q':
-                  
-                    self.game_over = True
-            if event.type == pygame.QUIT:
-                sys.exit()
+def fast_foward_game():
+    global state
+    state = 'foward'
 
-    def run(self):
+def reset_game():
+    global state
+    state = 'clear'
 
-        clock = pygame.time.Clock()
+# Game intialization
+pygame.init()
+window = pygame.display.set_mode((width,height))
+running = True
+clock = pygame.time.Clock()
+game_window = Game_window(window, 100 , 180)
+buttons = make_button()
+state = 'setting'
+#Game Loop
+while running:
+    mouse_pos = pygame.mouse.get_pos()
+    if state =='setting':
+        get_events()
+        update()
+        draw()
+    if state =='running':
+        running_get_events()
+        running_update()
+        running_draw()
+    if state =='running':
+        pause_get_events()
+        pause_update()
+        pause_draw()
+    if state =='rewind':
+        rewind_get_events()
+        rewind_update()
+        rewind_draw()
+    if state =='foward':
+        foward_get_events()
+        foward_update()
+        foward_draw()
+    if state =='clear':
+        clear_get_events()
+        clear_update()
+        clear_draw()
+    pygame.display.update()
+    clock.tick(FPS)
+pygame.quit()
+sys.exit()
 
-        while True:
-            if self.game_over:
-                return
-
-            self.get_event()
-
-            if not self.paused:
-                self.update_generation()
-                self.draw()
-
-            clock.tick(self.max_fps)

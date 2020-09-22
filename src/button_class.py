@@ -27,14 +27,24 @@ class Button:
         self.text_color = text_color
         self.bold_text = bold_text
         self.hover = False
+        self.showing = True
 
-    def update(self, pos):
+    def update(self, pos, game_state=''):
+          
             if self.mouse_hovering(pos):
-                self.hover = True
+                    self.hover = True
             else:
-                self.hover = False
+                   self.hover = False
+            if self.state == '' or game_state == '':
+                self.showing = True
+            else:
+                if self.state == game_state:
+                    self.showing = True
+                else:
+                    self.showing = False
     
     def draw(self):
+        if self.showing:
             if self.border:
                 self.image.fill(self.border_color)
                 if self.hover:
@@ -56,12 +66,15 @@ class Button:
             self.image.blit(text, pos)
 
     def mouse_hovering(self, pos):
+        if self.showing:
             if pos[0] > self.pos[0] and pos[0] < self.pos[0]+self.width:
                 if pos[1] > self.pos[1] and pos[1] < self.pos[1]+self.height:
                     return True
             else:
                 return False
-        
+        else: 
+            return False
+    
     def click(self):
             if self.function !=0:
                 self.function
