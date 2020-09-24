@@ -12,6 +12,7 @@ class Cell:
         self.rect = self.image.get_rect()
         self.neighbors = []
         self.alive_neighbor = 0
+        self.color = (0,0,0)
 
        
     def update(self):
@@ -24,9 +25,9 @@ class Cell:
 
     def draw(self):
         if self.alive:
-            self.image.fill((0,0,0))
+            self.image.fill(self.color)
         else:
-            self.image.fill((0,0,0))
+            self.image.fill((4,5,61))
             pygame.draw.rect(self.image ,(255,255,255), (1,1,16,16))
         self.surface.blit(self.image, (self.grid_x *20, self.grid_y *20))
     
@@ -56,3 +57,7 @@ class Cell:
             if neighbor.alive:
                 count += 1
         self.alive_neighbor = count
+
+    def set_color(self):
+        color = (random.randint(0,255),random.randint(0,255),random.randint(0,255))
+        self.color =color

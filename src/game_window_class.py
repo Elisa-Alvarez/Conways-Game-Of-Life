@@ -34,6 +34,10 @@ class Game_window:
     
     def clear(self):
         self.grid = [[Cell(self.image, x , y) for x in range(self.cols)] for y in range(self.rows)]
+        for row in self.grid:
+            for cell in  row:
+                cell.get_neighbors(self.grid)
+        
         self.generation = 0
     
     
@@ -66,9 +70,14 @@ class Game_window:
                     if cell.alive_neighbor == 3:
                         new_grid[yindex][xindex].alive = True
                         self.generation += 1
-                        
+    def random_color(self):
+        color_grid = copy.copy(self.grid)
+        for yindex, row in enumerate(self.grid):
+                for xindex, cell in enumerate(row):   
+                    if cell.alive:
+                            color_grid[yindex][xindex].set_color()            
 
-        self.grid = new_grid
+        self.grid = color_grid
   
     def pre_set_grid(self):
         set_grid = copy.copy(self.grid)
@@ -125,7 +134,7 @@ class Game_window:
                  set_grid[13][21].alive = True 
                  set_grid[14][10].alive = True
                  set_grid[14][11].alive = True
-                
+         
                 
         self.grid = set_grid
 
