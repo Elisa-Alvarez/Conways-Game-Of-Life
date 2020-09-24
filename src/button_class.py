@@ -36,7 +36,7 @@ class Button:
             else:
                    self.hover = False
             if self.state == '' or game_state == '':
-                self.showing = True
+                   self.showing = True
             else:
                 if self.state == game_state:
                     self.showing = True
@@ -70,11 +70,13 @@ class Button:
             if pos[0] > self.pos[0] and pos[0] < self.pos[0]+self.width:
                 if pos[1] > self.pos[1] and pos[1] < self.pos[1]+self.height:
                     return True
-            else:
+
+            else: 
                 return False
-        else: 
-            return False
+        else:
+         return False
     
     def click(self):
-            if self.function !=0:
-                self.function
+            if self.function != 0 and self.hover:
+                self.function()
+                
