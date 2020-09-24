@@ -1,4 +1,5 @@
 import pygame
+import time
 import sys
 import os
 from game_window_class import *
@@ -7,8 +8,8 @@ from button_class import *
 
 # Varibles for Game
 width,height = 800,800
-background = (199,199,199)
-FPS = 10
+background = (98,100,95)
+FPS = 5
 
 
 # Game Methods/Actions
@@ -27,7 +28,7 @@ def get_events():
         if event.type == pygame.KEYDOWN:
             if event.unicode == 'r':
                   game_window.random_grid()
-                  print(game_window.random_grid())
+                  game_window.update()
                   game_window.draw()
 
 def update():
@@ -39,7 +40,7 @@ def draw():
      window.fill(background)
      for button in buttons:
         button.draw()
-
+     game_window.gen()
      game_window.draw()
 
 def mouse_on_grid(pos):
@@ -76,13 +77,16 @@ def running_update():
     game_window.update()
     for button in buttons:
         button.update(mouse_pos, game_state = state)
+    
     game_window.scan_self()
+
 def running_draw():
      window.fill(background)
      for button in buttons:
         button.draw()
-
-     game_window.draw()
+     if state == "running":
+        game_window.gen()
+        game_window.draw()
 
 # Pause
 def pause_get_events():
@@ -112,15 +116,16 @@ def pause_draw():
      window.fill(background)
      for button in buttons:
         button.draw()
-
+     game_window.gen()
      game_window.draw()
 
-#Rewind
-def rewind_get_events():
+                                             #Foward
+def forward_events():
     global running
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False 
+            running = False
+
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_pos = pygame.mouse.get_pos()
             if mouse_on_grid(mouse_pos):
@@ -128,45 +133,20 @@ def rewind_get_events():
             else:
                 for button in buttons:
                     button.click()
-                   
-def rewind_update():
+ 
+def forward_update():
     game_window.update()
     for button in buttons:
         button.update(mouse_pos, game_state = state)
-
-def rewind_draw():
+    
+    game_window.scan_self()
+def forward_draw():
      window.fill(background)
      for button in buttons:
         button.draw()
-
-     game_window.draw()     
-
-#Foward
-def foward_get_events():
-    global running
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False 
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_pos = pygame.mouse.get_pos()
-            if mouse_on_grid(mouse_pos):
-                click_cell(mouse_pos)
-            else:
-                for button in buttons:
-                    button.click()
-
-def foward_update():
-    game_window.update()
-    for button in buttons:
-        button.update(mouse_pos, game_state = state)
-
-def foward_draw():
-     window.fill(background)
-     for button in buttons:
-        button.draw()
-
-     game_window.draw()
-
+     if state == "forward":
+        game_window.gen()
+        game_window.draw()
 
 #Clear
 def clear_get_events():
@@ -191,29 +171,53 @@ def clear_draw():
      window.fill(background)
      for button in buttons:
         button.draw()
-
+     game_window.gen()
      game_window.draw()
 
-def counter():
-    pass
+#Pre Selected Grid
+def selected_get_events():
+    global running
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_pos = pygame.mouse.get_pos()
+            if mouse_on_grid(mouse_pos):
+                click_cell(mouse_pos)
+            else:
+                for button in buttons:
+                    button.click()
+ 
+def selected_update():
+    game_window.update()
+    for button in buttons:
+        button.update(mouse_pos, game_state = state)
+    
+    game_window.scan_self()
+
+def selected_draw():
+     window.fill(background)
+     for button in buttons:
+        button.draw()
+     if state == "selected":
+        game_window.gen()
+        game_window.draw()
 
 def make_button():
     buttons = []
-   
-    #
-    buttons.append(Button(window, width//2 - 100,30, 150, 30, text ="Generation: %s "(gen_value) ,color=(50, 137, 168),hover_color=(174, 217, 232), bold_text=True))
     #Start Button
     buttons.append(Button(window, width//2 - 100,80, 150, 30, text ='Let us live!',color=(50, 137, 168),hover_color=(174, 217, 232), bold_text=True,function= run_game, state= "setting"))
     #Pause
     buttons.append(Button(window, width//2-220,80, 115, 30, text ='Pause life!',color=(50, 137, 168),hover_color=(174, 217, 232), bold_text=True,function=pause_game, state="running"))
-    #Rewind
-    buttons.append(Button(window, width//2 - 90,80, 170, 30, text ='Go back in time!',color=(50, 137, 168),hover_color=(174, 217, 232), bold_text=True,function=rewind_game,state='running' ))
-    # Fast Foward
-    buttons.append(Button(window, width//5 + 330,80, 150, 30, text ='Skip life!',color=(50, 137, 168),hover_color=(174, 217, 232), bold_text=True,function=fast_foward_game,state = "running"))
+    #Fast Forward
+    buttons.append(Button(window, width//5 + 330,80, 150, 30, text ='Speed up life!',color=(50, 137, 168),hover_color=(174, 217, 232), bold_text=True,function=fast_foward_game,state = "running"))
     #Resume
-    buttons.append(Button(window, width//2- 200,80, 150, 30, text ='Resume life!',color=(72, 169, 20),hover_color=(80, 197, 17), bold_text=True,function=run_game, state = "pause"))
-    # Reset Grid
+    buttons.append(Button(window, width//2- 200,80, 150, 30, text ='Resume life!',color=(72, 169, 20),hover_color=(80, 197, 17), bold_text=True,function=run_game, state = "forward"))
+    #Reset Grid
     buttons.append(Button(window, width//2 + 20,80, 150, 30, text ='Restart life!',color=(197, 32, 17,),hover_color=(245, 39, 20), bold_text=True,function=reset_game, state = "pause"))
+    #Preset Grid
+    buttons.append(Button(window, width//2 - 100,20, 150, 30, text ='Chosen Life!',color=(50, 137, 168),hover_color=(174, 217, 232), bold_text=True,function=pre_set_game, state = "setting"))
     return buttons
 
 
@@ -222,19 +226,24 @@ def make_button():
 def run_game():
     global state
     state = 'running'
+
 def pause_game():
     global state
     state = 'pause'
-def rewind_game():
-    global state
-    state = 'rewind'
+
 def fast_foward_game():
     global state
-    state = 'foward'
+    state = 'forward'
+    
 def reset_game():
     global state
     state = 'setting'
     game_window.clear()
+
+def pre_set_game():
+    global state
+    state = 'selected'
+    game_window.pre_set_grid()
 
 # Game intialization
 pygame.init() #stat game
@@ -255,6 +264,7 @@ while running:
         draw()
 
     if state =='running':
+        FPS = 8
         running_get_events()
         running_update()
         running_draw()
@@ -264,15 +274,17 @@ while running:
         pause_update()
         pause_draw()
 
-    if state =='rewind':
-        rewind_get_events()
-        rewind_update()
-        rewind_draw()
 
-    if state =='foward':
-        foward_get_events()
-        foward_update()
-        foward_draw()
+    if  state == 'forward':
+        FPS = 1000
+        forward_events()
+        forward_update()
+        forward_draw()
+
+    if state == "selected":
+        selected_get_events()
+        selected_update()
+        selected_draw()
 
     if state =='clear':
         clear_get_events()
