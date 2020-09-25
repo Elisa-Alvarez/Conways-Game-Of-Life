@@ -10,9 +10,9 @@
 3. Cells with more than 3 neighbors dies
 
 
-True = live cell (Black)
+  True = live cell (Black)
 
-Fals = dead cell (White)
+  Fals = dead cell (White)
 
 ----
 
